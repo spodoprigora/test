@@ -1,20 +1,37 @@
-﻿
+﻿@model List<test.ViewModel.MessagesViewModel>
+
 @{
     ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <h2>Index</h2>
 
+<div class="container">
+    @foreach (var messageModel in @Model)
+    {
+        <div>ИД @messageModel.Message.Id</div>
+        <div>ИД пользователя @messageModel.Message.IdUser</div>
+        <div>Имя @messageModel.Message.Name</div>
+        <div>Сообщение @messageModel.Message.Text</div>
+        <div> Лайки @messageModel.Message.LikeCount</div>
+        foreach(){
+
+        }
+    }
+
+
+</div>
 
 
 
 @section Form{
     @using (Html.BeginForm("Index", "Home", FormMethod.Get)){
-      @Html.TextBox("Name", "Введите имя")
-      @Html.TextArea("text", "Введите сообщение", 5, 50, null)
-      <p><input type="submit" value="Отправить" /></p>
+        @Html.TextBox("Name", "Введите имя")
+        @Html.TextArea("text", "Введите сообщение", 5, 50, null)
+        <p><input type="submit" value="Отправить" /></p>
 
     }
 }
-    
+
 
