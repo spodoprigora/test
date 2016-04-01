@@ -7,7 +7,12 @@ namespace test.Models
 {
     public class AttachmentModel
     {
-        public int Id { get; set; }
+        public AttachmentModel(string link)
+        {
+            this.Attachment = link;
+        }
+        //  public int Id { get; set; }
         public string Attachment { get; set; }
+       // public int IdMessage { get; set; }
     }
 }
