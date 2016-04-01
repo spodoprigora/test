@@ -119,12 +119,40 @@ namespace test.Repositories
             return attachments;
         }
 
-        public static List<MessagesViewModel> GetViewModel(IEnumerable<Message> msgs, IEnumerable<User> users, IEnumerable<Attachment> attachments){
+        //public static List<MessagesViewModel> GetViewModel(IEnumerable<Message> msgs, IEnumerable<User> users, IEnumerable<Attachment> attachments){
+        //    IEnumerable<MessageModel> messList = from m in msgs
+        //                                         join u in users on m.IdUser equals u.Id
+        //                                         select new MessageModel(m.Id, m.IdUser, u.Name, m.Text, m.MessageDate, m.LikeCount);
+
+        //    List<MessagesViewModel> model = new List<MessagesViewModel>();
+
+        //    foreach (MessageModel mess in messList)
+        //    {
+        //        int mesId = mess.Id;
+
+        //        IEnumerable<AttachmentModel> atach = from a in attachments
+        //                                             where a.IdMessage == mesId
+        //                                             select new AttachmentModel(a.Link);
+
+        //        var ViewModel = new MessagesViewModel
+        //        {
+        //            Message = mess,
+        //            Attachment = atach.ToList()
+        //        };
+        //        model.Add(ViewModel);
+        //    }
+
+        //    return model;
+        //}
+
+
+        public static List<MessageWithAttachemtns> GetViewModel(IEnumerable<Message> msgs, IEnumerable<User> users, IEnumerable<Attachment> attachments)
+        {
             IEnumerable<MessageModel> messList = from m in msgs
                                                  join u in users on m.IdUser equals u.Id
                                                  select new MessageModel(m.Id, m.IdUser, u.Name, m.Text, m.MessageDate, m.LikeCount);
 
-            List<MessagesViewModel> model = new List<MessagesViewModel>();
+            List<MessageWithAttachemtns> model = new List<MessageWithAttachemtns>();
 
             foreach (MessageModel mess in messList)
             {
@@ -134,7 +162,7 @@ namespace test.Repositories
                                                      where a.IdMessage == mesId
                                                      select new AttachmentModel(a.Link);
 
-                var ViewModel = new MessagesViewModel
+                var ViewModel = new MessageWithAttachemtns
                 {
                     Message = mess,
                     Attachment = atach.ToList()
@@ -144,6 +172,7 @@ namespace test.Repositories
 
             return model;
         }
-        
+
+
     }
 }

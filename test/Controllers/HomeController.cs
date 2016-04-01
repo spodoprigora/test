@@ -13,16 +13,46 @@ namespace test.Controllers
     public class HomeController : Controller
     {
         // GET: Home
-        public ActionResult Index()
+       public ActionResult Index()
         {
             IEnumerable<Message> msgs = Repository.GetMessages();
             IEnumerable<User> users = Repository.GetUsers();
             IEnumerable<Attachment> attachments = Repository.GetAttachments();
-            List<MessagesViewModel> model = Repository.GetViewModel(msgs, users,  attachments);
+            List<MessageWithAttachemtns> model = Repository.GetViewModel(msgs, users, attachments);
+
+            var viewModel = new MessagesViewModel()
+            {
+                Messages = model,
+                Paging = new PagingModel()
+            };
 
 
-
-            return View(model);
+            return View(viewModel);
         }
+
+        [HttpPost]
+        public ActionResult SaveMessage()
+        {
+            //ставим куки
+        //    var cookie = new HttpCookie()
+        //    {
+        //        Name = "test_cookie",
+        //        Value = DateTime.Now.ToString("dd.MM.yyyy"),
+        //        Expires = DateTime.Now.AddMinutes(10),
+        //    };
+        //    Response.SetCookie(cookie);
+        //// получаем куки
+        //    var cookie1 = Request.Cookies["test_cookie"];
+
+
+
+            return View();
+        }
+        public ActionResult DellMessage()
+        {
+           
+            return View();
+        }
+
     }
 }
