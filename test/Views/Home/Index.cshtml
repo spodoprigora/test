@@ -10,14 +10,24 @@
 <div class="container">
     @foreach (var messageModel in @Model)
     {
-        <div>ИД @messageModel.Message.Id</div>
-        <div>ИД пользователя @messageModel.Message.IdUser</div>
-        <div>Имя @messageModel.Message.Name</div>
-        <div>Сообщение @messageModel.Message.Text</div>
-        <div> Лайки @messageModel.Message.LikeCount</div>
-        foreach(){
+        <div style="border: 1px solid black; margin: 10px; ">
+            <div>ИД @messageModel.Message.Id</div>
+            <div>ИД пользователя @messageModel.Message.IdUser</div>
+            <div>Имя @messageModel.Message.Name</div>
+            <div>Сообщение @messageModel.Message.Text</div>
+            <div> Лайки @messageModel.Message.LikeCount</div>
+           <ul>
+               <li>Вложения:</li>
+               @foreach(var attach in @messageModel.Attachment){
+                <li>
+                    @attach.Attachment
+                </li>
+               }
+           </ul>
+           
+        </div>
+   
 
-        }
     }
 
 
