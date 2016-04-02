@@ -43,7 +43,6 @@ namespace test.Controllers
                 };
                 return View(viewModel);
             }
-
         }
 
         [HttpPost]
@@ -73,14 +72,13 @@ namespace test.Controllers
                 cookie.Expires = DateTime.Now.AddDays(10);
                 Response.SetCookie(cookie);
             }
-            //return new HttpStatusCodeResult(200);
-            return null;
-        }
+            return new HttpStatusCodeResult(200);
+         }
 
     [HttpPost]
-        public ActionResult DellMessage(int Id)
+        public ActionResult DellMessage(int messadgeId)
         {
-            bool res = Repository.Dell(Id);
+            bool res = Repository.Dell(messadgeId);
         if(res)
             return new HttpStatusCodeResult(200);
         else

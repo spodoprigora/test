@@ -6,13 +6,13 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container" id="result">
+
       @{ Html.RenderPartial("MessageDetails", @Model.Messages);}
-</div>
+
 
 @section Form{
    
-    @using (Ajax.BeginForm("SaveMessage", "Home", new AjaxOptions { UpdateTargetId = "results" }, new { @class = "form", enctype = "multipart/form-data" }))
+    @using (Ajax.BeginForm("SaveMessage", "Home", new AjaxOptions { UpdateTargetId = "result"}, new { @class = "form", enctype = "multipart/form-data" }))
     {
         <div>
             @Html.Label("Name", "Имя")
@@ -56,6 +56,23 @@
         return false;
     });
 
+        $('.del').on('click', function (event) {
+            var Id = $(this).attr('data-ajax');
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("DellMessage", "Home")',
+                data: "messadgeId=" + Id,
+                success: function (result) {
+
+                },
+                error: function (xhr, status, p3) {
+                    alert(xhr.responseText);
+                }
+            });
+            return false;
+        });
+
 
     setInterval(function () {
         $.ajax({
@@ -63,7 +80,7 @@
             url: '@Url.Action("Index", "Home")',
             data: "",
             success: function (rsult) {
-                //alert("request");
+               
             }
         });
     }, 10000);
