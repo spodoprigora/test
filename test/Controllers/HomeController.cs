@@ -31,16 +31,20 @@ namespace test.Controllers
         }
 
         [HttpPost]
-        public ActionResult SaveMessage()
+        public ActionResult SaveMessage(string Name, string Message, string Link )
         {
-            //ставим куки
-        //    var cookie = new HttpCookie()
-        //    {
-        //        Name = "test_cookie",
-        //        Value = DateTime.Now.ToString("dd.MM.yyyy"),
-        //        Expires = DateTime.Now.AddMinutes(10),
-        //    };
-        //    Response.SetCookie(cookie);
+            if(Name!=null){
+                var cookie = new HttpCookie()
+                {
+                    Name = "name",
+                    Value = Name,
+                    Expires = DateTime.Now.AddMinutes(10)
+                };
+                Response.SetCookie(cookie);
+            }
+           
+       
+       
         //// получаем куки
         //    var cookie1 = Request.Cookies["test_cookie"];
 
@@ -52,6 +56,26 @@ namespace test.Controllers
         {
            
             return View();
+        }
+
+        [HttpPost]
+        public JsonResult Upload()
+        {
+            string fileList = null;
+            foreach (string file in Request.Files)
+            {
+                var upload = Request.Files[file];
+                
+                if (upload != null)
+                {
+                    // получаем имя файла
+                    string fileName = System.IO.Path.GetFileName(upload.FileName);
+                    // сохраняем файл в папку Files в проекте
+                    upload.SaveAs(Server.MapPath("~/TempUploadFiles/" + fileName));
+                    fileList += fileName + ",";
+                }
+            }
+            return Json(fileList);
         }
 
     }

@@ -6,44 +6,102 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Index</h2>
-
-<div class="container">
+<div class="container" id="result">
     @foreach (var messageModel in @Model.Messages)
     {
-   
-        <div style="border: 1px solid black; margin: 10px; ">
-            <div>ИД @messageModel.Message.Id</div>
-            <div>ИД пользователя @messageModel.Message.IdUser</div>
-            <div>Имя @messageModel.Message.Name</div>
-            <div>Сообщение @messageModel.Message.Text</div>
-            <div> Лайки @messageModel.Message.LikeCount</div>
+        <div class="message">
+            @*<div>ИД @messageModel.Message.Id</div>
+                <div>ИД пользователя @messageModel.Message.IdUser</div>*@
+            <h3 class="text-warning">@messageModel.Message.Name</h3>
+            <div>@messageModel.Message.Text</div>
+            <a href="/" class="like">@messageModel.Message.LikeCount</a>
+            <p>Вложения:</p>
             <ul>
-                <li>Вложения:</li>
-                @foreach(var attach in @messageModel.Attachment){
+                @foreach (var attach in @messageModel.Attachment)
+                {
                     <li>
                         @attach.Attachment
                     </li>
-               }
+                }
             </ul>
 
         </div>
-
-
     }
 
-
-    </div>
-
-
+</div>
 
 @section Form{
-    @using (Html.BeginForm("Index", "Home", FormMethod.Get)){
-        @Html.TextBox("Name", "Введите имя")
-        @Html.TextArea("text", "Введите сообщение", 5, 50, null)
-        <p><input type="submit" value="Отправить" /></p>
-
+   
+    @using (Ajax.BeginForm("SaveMessage", "Home", new AjaxOptions { UpdateTargetId = "results" }, new { @class = "form" }))
+    {
+        <div>
+            @Html.Label("Name", "Имя")
+            @Html.TextBox("Name", "", new { placeholder = "Введите имя" })
+        </div>
+        <div>
+            @Html.Label("Message", "Сообщение")
+            @Html.TextArea("Message", new { @style = "width: 450px;", @placeholder = "Введите сообщение здесь" })
+        </div>
+        <div class="att">
+            <fieldset>
+                <span class="label">Добавьте вложения</span>
+                @Html.Label("Link", "Введите ссылку")
+                @Html.TextBox("Link", "", new { placeholder = "link" })
+                <ul id="attachment"></ul>
+                <div class="file">
+                    <div class="sub_sel">
+                        <span>Выбрать файл</span>
+                    </div>
+                    <input type="hidden" name="MAX_FILE_SIZE" value="5000000">
+                    <input type="file" id="uploadFile" class="fil" multiple="true">
+                </div>
+            </fieldset>
+       </div>
+       <p><input type="submit" value="Отправить" class="btn btn-success"/></p>
     }
+}
+
+@section scripts{
+    <script type="text/javascript">
+
+        $('#uploadFile').on('change', function (e) {
+        e.preventDefault();
+        //var files = document.getElementsByClassName('uploadFile');
+        var files = document.getElementById('uploadFile').files;
+        if (files.length > 0) {
+            if (window.FormData !== undefined) {
+                var data = new FormData();
+                for (var x = 0; x < files.length; x++) {
+                    data.append("file" + x, files[x]);
+                }
+
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("Upload", "Home")',
+                    contentType: false,
+                    processData: false,
+                    data: data,
+                    success: function (result) {
+                        var fileArr = result.split(',');
+
+                        var list = document.getElementById("attachment");
+                        var arrLength = fileArr.length-1;
+                        for (var i = 0; i < arrLength; i++) {
+                            var li = document.createElement('li');
+                            li.innerHTML = fileArr[i];
+                            list.appendChild(li);
+                        }
+                    },
+                    error: function (xhr, status, p3) {
+                        alert(xhr.responseText);
+                    }
+                });
+            } else {
+                alert("Браузер не поддерживает загрузку файлов HTML5!");
+            }
+        }
+    });
+    </script>
 }
 
 
