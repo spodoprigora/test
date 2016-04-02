@@ -7,6 +7,7 @@ using test.Entities;
 using test.Repositories;
 using test.ViewModel;
 using test.Models;
+using System.IO;
 
 namespace test.Controllers
 {
@@ -20,63 +21,84 @@ namespace test.Controllers
             IEnumerable<Attachment> attachments = Repository.GetAttachments();
             List<MessageWithAttachemtns> model = Repository.GetViewModel(msgs, users, attachments);
 
-            var viewModel = new MessagesViewModel()
+            // получаем куки
+            var cookie = Request.Cookies["name"];
+            if (cookie != null)
             {
-                Messages = model,
-                Paging = new PagingModel()
-            };
+                var cookieVal = cookie.Value;
+                ViewBag.userId = Convert.ToInt32(cookieVal);
+           }
+            
 
-
-            return View(viewModel);
-        }
-
-        [HttpPost]
-        public ActionResult SaveMessage(string Name, string Message, string Link )
-        {
-            if(Name!=null){
-                var cookie = new HttpCookie()
-                {
-                    Name = "name",
-                    Value = Name,
-                    Expires = DateTime.Now.AddMinutes(10)
-                };
-                Response.SetCookie(cookie);
+            if (Request.IsAjaxRequest())
+            {
+                return PartialView("MessageDetails", model);
             }
-           
-       
-       
-        //// получаем куки
-        //    var cookie1 = Request.Cookies["test_cookie"];
+            else
+            {
+                var viewModel = new MessagesViewModel()
+                {
+                    Messages = model,
+                    Paging = new PagingModel()
+                };
+                return View(viewModel);
+            }
 
-
-
-            return View();
-        }
-        public ActionResult DellMessage()
-        {
-           
-            return View();
         }
 
         [HttpPost]
-        public JsonResult Upload()
+       public ActionResult SaveMessage(string Name, string Message, string Link)
         {
-            string fileList = null;
+            List<string> attachList = new List<string>();
+            attachList.Add(Link);
             foreach (string file in Request.Files)
             {
-                var upload = Request.Files[file];
-                
-                if (upload != null)
-                {
-                    // получаем имя файла
-                    string fileName = System.IO.Path.GetFileName(upload.FileName);
-                    // сохраняем файл в папку Files в проекте
-                    upload.SaveAs(Server.MapPath("~/TempUploadFiles/" + fileName));
-                    fileList += fileName + ",";
-                }
+               var upload = Request.Files[file];
+               if (upload != null && upload.FileName!="")
+               {
+                 // получаем имя файла
+                 string fileName = System.IO.Path.GetFileName(upload.FileName);
+                 var nameArr = fileName.Split('.');
+                 string path = Server.MapPath("~/UploadFiles/" + nameArr[0] + "~" + Guid.NewGuid() + "." + nameArr[1]);
+                 // сохраняем файл в папку Files в проекте
+                 upload.SaveAs(path);
+                 attachList.Add(path);
+               }
+ 
             }
-            return Json(fileList);
+            int userId = Repository.SaveMessage(Name, Message, attachList);
+            if (Name != null)
+            {
+                var cookie = new HttpCookie("name", userId.ToString());
+                cookie.Expires = DateTime.Now.AddDays(10);
+                Response.SetCookie(cookie);
+            }
+            //return new HttpStatusCodeResult(200);
+            return null;
         }
+
+    [HttpPost]
+        public ActionResult DellMessage(int Id)
+        {
+            bool res = Repository.Dell(Id);
+        if(res)
+            return new HttpStatusCodeResult(200);
+        else
+            return new HttpStatusCodeResult(400);
+   
+        }
+
+        [HttpPost]
+    public ActionResult LikeInc(int messadgeId)
+        {
+
+            bool res = Repository.IncLike(messadgeId);
+            if (res)
+                return new HttpStatusCodeResult(200);
+            else
+                return new HttpStatusCodeResult(400);
+        }
+       
 
     }
 }

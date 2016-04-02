@@ -7,32 +7,12 @@
 }
 
 <div class="container" id="result">
-    @foreach (var messageModel in @Model.Messages)
-    {
-        <div class="message">
-            @*<div>ИД @messageModel.Message.Id</div>
-                <div>ИД пользователя @messageModel.Message.IdUser</div>*@
-            <h3 class="text-warning">@messageModel.Message.Name</h3>
-            <div>@messageModel.Message.Text</div>
-            <a href="/" class="like">@messageModel.Message.LikeCount</a>
-            <p>Вложения:</p>
-            <ul>
-                @foreach (var attach in @messageModel.Attachment)
-                {
-                    <li>
-                        @attach.Attachment
-                    </li>
-                }
-            </ul>
-
-        </div>
-    }
-
+      @{ Html.RenderPartial("MessageDetails", @Model.Messages);}
 </div>
 
 @section Form{
    
-    @using (Ajax.BeginForm("SaveMessage", "Home", new AjaxOptions { UpdateTargetId = "results" }, new { @class = "form" }))
+    @using (Ajax.BeginForm("SaveMessage", "Home", new AjaxOptions { UpdateTargetId = "results" }, new { @class = "form", enctype = "multipart/form-data" }))
     {
         <div>
             @Html.Label("Name", "Имя")
@@ -47,61 +27,48 @@
                 <span class="label">Добавьте вложения</span>
                 @Html.Label("Link", "Введите ссылку")
                 @Html.TextBox("Link", "", new { placeholder = "link" })
-                <ul id="attachment"></ul>
-                <div class="file">
-                    <div class="sub_sel">
-                        <span>Выбрать файл</span>
-                    </div>
-                    <input type="hidden" name="MAX_FILE_SIZE" value="5000000">
-                    <input type="file" id="uploadFile" class="fil" multiple="true">
-                </div>
+
+                <input type="file" id="" value="" name="file[]" accept="image/jpeg,image/png,image/gif" multiple="true" />
             </fieldset>
        </div>
        <p><input type="submit" value="Отправить" class="btn btn-success"/></p>
     }
 }
 
+
+
 @section scripts{
     <script type="text/javascript">
+    $('.like').on('click', function (event) {
+        var Id = $(this).attr('data-ajax');
 
-        $('#uploadFile').on('change', function (e) {
-        e.preventDefault();
-        //var files = document.getElementsByClassName('uploadFile');
-        var files = document.getElementById('uploadFile').files;
-        if (files.length > 0) {
-            if (window.FormData !== undefined) {
-                var data = new FormData();
-                for (var x = 0; x < files.length; x++) {
-                    data.append("file" + x, files[x]);
-                }
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("LikeInc", "Home")',
+            data: "messadgeId=" + Id,
+            success: function (result) {
 
-                $.ajax({
-                    type: "POST",
-                    url: '@Url.Action("Upload", "Home")',
-                    contentType: false,
-                    processData: false,
-                    data: data,
-                    success: function (result) {
-                        var fileArr = result.split(',');
-
-                        var list = document.getElementById("attachment");
-                        var arrLength = fileArr.length-1;
-                        for (var i = 0; i < arrLength; i++) {
-                            var li = document.createElement('li');
-                            li.innerHTML = fileArr[i];
-                            list.appendChild(li);
-                        }
-                    },
-                    error: function (xhr, status, p3) {
-                        alert(xhr.responseText);
-                    }
-                });
-            } else {
-                alert("Браузер не поддерживает загрузку файлов HTML5!");
+            },
+            error: function (xhr, status, p3) {
+                alert(xhr.responseText);
             }
-        }
+        });
+        return false;
     });
-    </script>
+
+
+    setInterval(function () {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("Index", "Home")',
+            data: "",
+            success: function (rsult) {
+                //alert("request");
+            }
+        });
+    }, 10000);
+
+
+
+   </script>
 }
-
-
