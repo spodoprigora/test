@@ -52,7 +52,7 @@ namespace test.Repositories
             return users;
         }
 
-        public static IEnumerable<Message> GetMessages()
+        public static IEnumerable<Message> GetMessages(int page, int pageSize)
         {
            var messages = new List<Message>();
             try
@@ -121,32 +121,6 @@ namespace test.Repositories
             return attachments;
         }
 
-        //public static List<MessagesViewModel> GetViewModel(IEnumerable<Message> msgs, IEnumerable<User> users, IEnumerable<Attachment> attachments){
-        //    IEnumerable<MessageModel> messList = from m in msgs
-        //                                         join u in users on m.IdUser equals u.Id
-        //                                         select new MessageModel(m.Id, m.IdUser, u.Name, m.Text, m.MessageDate, m.LikeCount);
-
-        //    List<MessagesViewModel> model = new List<MessagesViewModel>();
-
-        //    foreach (MessageModel mess in messList)
-        //    {
-        //        int mesId = mess.Id;
-
-        //        IEnumerable<AttachmentModel> atach = from a in attachments
-        //                                             where a.IdMessage == mesId
-        //                                             select new AttachmentModel(a.Link);
-
-        //        var ViewModel = new MessagesViewModel
-        //        {
-        //            Message = mess,
-        //            Attachment = atach.ToList()
-        //        };
-        //        model.Add(ViewModel);
-        //    }
-
-        //    return model;
-        //}
-
        public static List<MessageWithAttachemtns> GetViewModel(IEnumerable<Message> msgs, IEnumerable<User> users, IEnumerable<Attachment> attachments)
         {
             IEnumerable<MessageModel> messList = from m in msgs
@@ -174,7 +148,7 @@ namespace test.Repositories
             return model;
         }
 
-       public static int SaveMessage(string name, string Message, List<string> Links){
+       public static int SaveMessage(string name, string Message, List<string> Links, int? Id){
            int userId = 0;
            try
            {
@@ -182,20 +156,24 @@ namespace test.Repositories
                {
                    connection.Open();
                    // Работа с базой данных
+                    if(Id == null){
+                        SqlCommand command = new SqlCommand("INSERT INTO Users (Name) VALUES (@Name)", connection);
+                        SqlParameter Name = new SqlParameter("Name", SqlDbType.NVarChar);
+                        if (name != null)
+                            Name.Value = name;
+                        else
+                            Name.Value = "Аноним";
+                        command.Parameters.Add(Name);
 
-                   SqlCommand command = new SqlCommand("INSERT INTO Users (Name) VALUES (@Name)", connection);
-                   SqlParameter Name = new SqlParameter("Name", SqlDbType.NVarChar);
-                   if(name!=null)
-                       Name.Value = name;
-                   else
-                       Name.Value = "Аноним";
-                   command.Parameters.Add(Name);
+                        command.ExecuteNonQuery();
 
-                   command.ExecuteNonQuery();
-
-                   SqlCommand command1 = new SqlCommand(" SELECT MAX(Id) FROM users", connection);
-                   userId = (int)command1.ExecuteScalar();
-
+                        SqlCommand command1 = new SqlCommand(" SELECT MAX(Id) FROM users", connection);
+                        userId = (int)command1.ExecuteScalar();
+                    }
+                    else                    
+                        userId = (int)Id;
+                  
+           
                    SqlCommand command2 = new SqlCommand("INSERT INTO Messages (IdUser, Text, MessageDate, LikeCount) VALUES (@IdUser, @Text, GETDATE(), 0)", connection);
                    SqlParameter IdUser = new SqlParameter("IdUser", SqlDbType.Int);
                    IdUser.Value = userId;
@@ -293,5 +271,6 @@ namespace test.Repositories
            }
            return true;
        }
+
     }
 }

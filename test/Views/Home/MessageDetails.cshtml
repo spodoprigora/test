@@ -4,8 +4,8 @@
 @foreach (var messageModel in @Model)
     {
     <div class="message">
-        @*<div>ИД @messageModel.Message.Id</div>
-            <div>ИД пользователя @messageModel.Message.IdUser</div>*@
+        @*<div>ИД @messageModel.Message.Id</div>*@
+            <div>ИД пользователя @messageModel.Message.IdUser</div>
         <h3 class="text-warning">@messageModel.Message.Name</h3>
         <div>@messageModel.Message.Text</div>
         @{
@@ -22,7 +22,7 @@
             @foreach (var attach in @messageModel.Attachment)
             {
                 <li>
-                    <a href="@attach.Attachment">@attach.Attachment</a>
+                    <a href="@attach.Attachment" target="_blank">@attach.Attachment</a>
                 </li>
             }
         </ul>
@@ -30,7 +30,8 @@
             {
                @Ajax.ActionLink("Удалить", "DellMessage", "Home",
                    new { messadgeId = @messageModel.Message.Id },
-                   new AjaxOptions { OnSuccess = "updateMessages", HttpMethod ="POST"}
+                   new AjaxOptions { OnSuccess = "updateMessages", HttpMethod ="POST"},
+                         new { @class = "dell" }
                )
             }
     </div>

@@ -10,66 +10,141 @@
     @{ Html.RenderPartial("MessageDetails", @Model.Messages); }
 </div>
 
+@Html.Raw(Ajax.Pager(
+       new Options{
+           PageSize = Model.Paging.PageSize,
+           TotalItemCount = Model.Paging.TotalItemCount,
+           CurrentPage = Model.Paging.PageNumber,
+           ItemTexts = new ItemTexts() { Next = "Next", Previous = "Previous", Page = "P" },
+           ItemIcon = new ItemIcon() { First = "icon-backward", Previous = "icon-chevron-left", Next = "icon-chevron-right", Last = "icon-forward" },
+           TooltipTitles = new TooltipTitles() { Next = "Next page", Previous = "Previous page", Page = "Go to page {0}.", First = "Go To First Page", Last = "Go To Last Page" },
+           Size = Size.normal,
+           Alignment = Alignment.centered,
+           IsShowControls = true,
+            IsShowFirstLast = true},
+       new AjaxOptions{
+           UpdateTargetId = "grid-list",
+           OnBegin = "beginPaging",
+           OnSuccess = "successPaging",
+           OnFailure = "failurePaging"},
+     new { controller = "Home", action = "Index", employee_name = ViewData["employee_name"] }))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @section Form{
-  
-    @using (Ajax.BeginForm("SaveMessage", "Home",
-        new {},
-        new AjaxOptions { OnSuccess = "updateMessages"}, 
-        new { @class = "form", enctype = "multipart/form-data" }))
-    {
-        <div>
-            @Html.Label("Name", "Имя")
-            @Html.TextBox("Name", "", new { placeholder = "Введите имя" })
-        </div>
-        <div>
-            @Html.Label("Message", "Сообщение")
-            @Html.TextArea("Message", new { @style = "width: 450px;", @placeholder = "Введите сообщение здесь" })
-        </div>
-        <div class="att">
-            <fieldset>
+            
+   @using (Html.BeginForm("SaveMessage", "Home", FormMethod.Post,
+
+        new { id = "mesForm", @class = "form", enctype = "multipart/form-data" }))
+   {
+    <div>
+        @Html.Label("Name", "Имя")
+        @Html.TextBox("Name", "", new { placeholder = "Введите имя" })
+    </div>
+    <div>
+        @Html.Label("Message", "Сообщение")
+        @Html.TextArea("Message", new { @style = "width:450px;", @placeholder = "Введите сообщение здесь" })
+    </div>
+    <div class="att">
+        <fieldset>
+           
+            
+                <span class="cross"></span>
                 <span class="label">Добавьте вложения</span>
                 @Html.Label("Link", "Введите ссылку")
                 @Html.TextBox("Link", "", new { placeholder = "link" })
+           
+            
 
-                <input type="file" name="fileInput" accept="image/jpeg,image/png,image/gif" multiple="true" />
-            </fieldset>
-       </div>
-       <p><input type="submit" value="Отправить" class="btn btn-success"/></p>
-    }
+            <input id="uploadFile" type="file" name="files" accept="image/jpeg,image/png,image/gif" multiple="true" />
+        </fieldset>
+    </div>
+    <p>
+        <input id="mesFormSubmit" type="button" value="Отправить" class="btn btn-success" />
+    </p>
+   }
+  
 }
 
 
 
 @section scripts{
     <script type="text/javascript">
-   
+        $(document).ready(function () {
 
-    setInterval(function () {
-        $.ajax({
-            type: "POST",
-            url: '@Url.Action("Index", "Home")',
-            data: "",
-            success: function (result) {
-                $('#result').empty();
-                $('#result').html(result);
-            }
-        });
-    }, 5000);
+            setInterval(function () {
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("Index", "Home")',
+                    data: "",
+                    success: function (result) {
+                        $('#result').empty();
+                        $('#result').html(result);
+                    }
+                });
+            }, 1000);
 
+            var updateMessages = function () {
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("Index", "Home")',
+                    data: "",
+                    success: function (result) {
+                        $('#result').empty();
+                        $('#result').html(result);
+                    }
+                });
+            };
 
-        var updateMessages = function () {
-            $.ajax({
-                type: "POST",
-                url: '@Url.Action("Index", "Home")',
-                data: "",
-                success: function (result) {
-                    $('#result').empty();
-                    $('#result').html(result);
-                }
+            $('#mesFormSubmit').on('click', function (e) {
+
+                var postbody = $("#mesForm").serializeArray();
+                var files = document.getElementById('uploadFile').files;
+                if (window.FormData !== undefined) {
+                    var data = new FormData();
+                    for (var i = 0; i < postbody.length; i++) {
+                        data.append(postbody[i].name, postbody[i].value);
+                    }
+                    if (files.length > 0) {
+                        for (var x = 0; x < files.length; x++) {
+                            data.append("file" + x, files[x]);
+                        }
+                    }
+                };
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("SaveMessage", "Home")',
+                    contentType: false,
+                    processData: false,
+                    data: data,
+                    success: function (result) {
+
+                    },
+                    error: function (xhr, status, p3) {
+                        alert(xhr.responseText);
+                    }
+                });
+
             });
-        };
+
+            $('.cross').on('click', function (e) {
+                var el = $('.add');
+                $('#uploadFile').before("<input type='url' name='Link' value='link'placeholder = 'link'>");
+            });
 
 
+        })
 
    </script>
 }

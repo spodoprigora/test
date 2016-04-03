@@ -8,17 +8,22 @@ using test.Repositories;
 using test.ViewModel;
 using test.Models;
 using System.IO;
+using test.ResolveServerUrl;
 
 namespace test.Controllers
 {
     public class HomeController : Controller
     {
+        protected int PageSize = 10;
         // GET: Home
-       public ActionResult Index()
+        public ActionResult Index(int? page =1)
         {
-            IEnumerable<Message> msgs = Repository.GetMessages();
+            int currentPageIndex = page.HasValue ? page.Value : 1;
+
+            IEnumerable<Message> msgs = Repository.GetMessages(currentPageIndex, PageSize);
             IEnumerable<User> users = Repository.GetUsers();
             IEnumerable<Attachment> attachments = Repository.GetAttachments();
+            PagingModel Pages = Repository.GetPageInfo();
             List<MessageWithAttachemtns> model = Repository.GetViewModel(msgs, users, attachments);
 
             // получаем куки
@@ -46,13 +51,13 @@ namespace test.Controllers
         }
 
         [HttpPost]
-       public ActionResult SaveMessage(string Name, string Message, string Link)
+       public ActionResult SaveMessage(string Name, string Message, IEnumerable<string> Link)
         {
-
-            
-
             List<string> attachList = new List<string>();
-            attachList.Add(Link);
+            foreach(var att in Link){
+                attachList.Add(att);
+            }
+            
             foreach (string file in Request.Files)
             {
                var upload = Request.Files[file];
@@ -61,20 +66,45 @@ namespace test.Controllers
                  // получаем имя файла
                  string fileName = System.IO.Path.GetFileName(upload.FileName);
                  var nameArr = fileName.Split('.');
-                 string path = Server.MapPath("~/UploadFiles/" + nameArr[0] + "~" + Guid.NewGuid() + "." + nameArr[1]);
+                string AbsolurFile = nameArr[0] + "~" + Guid.NewGuid() + "." + nameArr[1];
+                 string path = Server.MapPath("~/UploadFiles/" + AbsolurFile);
                  // сохраняем файл в папку Files в проекте
                  upload.SaveAs(path);
-                 attachList.Add(path);
+
+
+
+                   string ServerPath = Resolve.ResolveServerUrl(VirtualPathUtility.ToAbsolute("~/UploadFiles/"+AbsolurFile),false);
+                   attachList.Add(ServerPath);
                }
- 
+             }
+
+
+
+
+
+            
+            var cookie = Request.Cookies["name"];
+            if(cookie != null){
+                var cookieVal = Convert.ToInt32(cookie.Value);
+                int userId = Repository.SaveMessage(Name, Message, attachList, cookieVal);
             }
-            int userId = Repository.SaveMessage(Name, Message, attachList);
-            if (Name != null)
+            else
             {
-                var cookie = new HttpCookie("name", userId.ToString());
-                cookie.Expires = DateTime.Now.AddDays(10);
-                Response.SetCookie(cookie);
+                int userId = Repository.SaveMessage(Name, Message, attachList);
+                if (Name != null)
+                {
+                    cookie = new HttpCookie("name", userId.ToString());
+                    cookie.Expires = DateTime.Now.AddDays(10);
+                    Response.SetCookie(cookie);
+                }
             }
+
+
+        
+
+
+
+           
             return new HttpStatusCodeResult(200);
          }
 
