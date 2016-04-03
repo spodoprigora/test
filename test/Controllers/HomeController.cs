@@ -16,14 +16,15 @@ namespace test.Controllers
     {
         protected int PageSize = 10;
         // GET: Home
-        public ActionResult Index(int? page =1)
+        public ActionResult Index(int page = 1)
         {
-            int currentPageIndex = page.HasValue ? page.Value : 1;
 
-            IEnumerable<Message> msgs = Repository.GetMessages(currentPageIndex, PageSize);
+
+            IEnumerable<Message> msgs = Repository.GetMessages(page, PageSize);
             IEnumerable<User> users = Repository.GetUsers();
             IEnumerable<Attachment> attachments = Repository.GetAttachments();
-            PagingModel Pages = Repository.GetPageInfo();
+            var totalMessagesCount = Repository.GetTotalItemsCount();
+
             List<MessageWithAttachemtns> model = Repository.GetViewModel(msgs, users, attachments);
 
             // получаем куки
@@ -41,10 +42,10 @@ namespace test.Controllers
             }
             else
             {
-                var viewModel = new MessagesViewModel()
+                var viewModel = new MessagesViewModel
                 {
                     Messages = model,
-                    Paging = new PagingModel()
+                    Paging = new PagingModel(page, PageSize, totalMessagesCount)
                 };
                 return View(viewModel);
             }
@@ -90,8 +91,7 @@ namespace test.Controllers
             }
             else
             {
-                int userId = Repository.SaveMessage(Name, Message, attachList);
-                if (Name != null)
+                var userId = Repository.SaveMessage(Name, Message, attachList);
                 {
                     cookie = new HttpCookie("name", userId.ToString());
                     cookie.Expires = DateTime.Now.AddDays(10);

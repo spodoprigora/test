@@ -60,9 +60,14 @@ namespace test.Repositories
                 using (var connection = new SqlConnection(ConnectionString))
                 {
                      connection.Open();
-                    // Работа с базой данных
-
-                    SqlCommand command = new SqlCommand("SELECT Id, IdUser, Text, MessageDate, LikeCount Name FROM Messages", connection);
+                     SqlCommand command = new SqlCommand(" SELECT Id, IdUser, Text, MessageDate, LikeCount from Messages ORDER BY Id DESC OFFSET(@PageSize * @Page) ROWS FETCH NEXT @PageSize ROWS ONLY", connection);
+                     SqlParameter PageSize = new SqlParameter("PageSize", SqlDbType.Int);
+                     PageSize.Value = pageSize;
+                     command.Parameters.Add(PageSize);
+                     SqlParameter Page = new SqlParameter("Page", SqlDbType.Int);
+                     Page.Value = page;
+                     command.Parameters.Add(Page);
+                    
                     SqlDataReader reader = command.ExecuteReader();
 
                     while (reader.Read())
@@ -148,7 +153,8 @@ namespace test.Repositories
             return model;
         }
 
-       public static int SaveMessage(string name, string Message, List<string> Links, int? Id){
+       public static int SaveMessage(string name, string Message, List<string> Links, int? Id = null)
+       {
            int userId = 0;
            try
            {
@@ -270,6 +276,28 @@ namespace test.Repositories
                return false;
            }
            return true;
+       }
+
+       public static int GetTotalItemsCount()
+       {
+           int count = default(int);
+           try
+           {
+               using (var connection = new SqlConnection(ConnectionString))
+               {
+                   connection.Open();
+
+                   SqlCommand command = new SqlCommand("SELECT COUNT(*) FROM Messages", connection);
+                   count = (int)command.ExecuteScalar();
+
+                   connection.Close();
+               }
+           }
+           catch (Exception ex)
+           {
+           }
+
+           return count;
        }
 
     }
