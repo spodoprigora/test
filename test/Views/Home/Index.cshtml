@@ -6,26 +6,11 @@
 }
 
 <div class="container" id="result">
-    @{ Html.RenderPartial("MessageDetails", @Model.Messages); }
+    @{ Html.RenderPartial("MessageDetails", @Model); }
 </div>
 
 
-<div class="page-header">
-    @*@Html.PaginationBlock(Model.Paging, Request.QueryString, Ajax, new AjaxOptions(),
-    PagingHelper.PageLinkOption.Prevoius.ToString(),
-    PagingHelper.PageLinkOption.Next.ToString())*@
 
-
-    @Html.PaginationBlock(Model.Paging, Request.QueryString, Ajax, new AjaxOptions()
-    {
-
-        HttpMethod = "GET",
-        InsertionMode = InsertionMode.ReplaceWith,
-
-        UpdateTargetId = "result",
-
-    }, PagingHelper.PageLinkOption.Prevoius.ToString(), PagingHelper.PageLinkOption.Next.ToString())
-</div>
 
 
 
@@ -72,14 +57,15 @@
 
 
 @section scripts{
+    
     <script type="text/javascript">
-        $(document).ready(function () {
+    $(document).ready(function () {
 
-            setInterval(function () {
-                $.ajax({
-                    type: "POST",
-                    url: '@Url.Action("Index", "Home")',
-                    data: "",
+        setInterval(function () {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Index", "Home")',
+                    data: "page=" + @Model.Paging.CurrentPage,
                     success: function (result) {
                         $('#result').empty();
                         $('#result').html(result);
@@ -91,52 +77,75 @@
                 $.ajax({
                     type: "POST",
                     url: '@Url.Action("Index", "Home")',
-                    data: "",
-                    success: function (result) {
-                        $('#result').empty();
-                        $('#result').html(result);
-                    }
-                });
-            };
+                data: "",
+                success: function (result) {
+                    $('#result').empty();
+                    $('#result').html(result);
+                }
+            });
+        };
 
-            $('#mesFormSubmit').on('click', function (e) {
 
-                var postbody = $("#mesForm").serializeArray();
-                var files = document.getElementById('uploadFile').files;
-                if (window.FormData !== undefined) {
-                    var data = new FormData();
-                    for (var i = 0; i < postbody.length; i++) {
-                        data.append(postbody[i].name, postbody[i].value);
-                    }
-                    if (files.length > 0) {
-                        for (var x = 0; x < files.length; x++) {
-                            data.append("file" + x, files[x]);
-                        }
-                    }
-                };
-                $.ajax({
-                    type: "POST",
-                    url: '@Url.Action("SaveMessage", "Home")',
-                    contentType: false,
-                    processData: false,
-                    data: data,
-                    success: function (result) {
-
-                    },
-                    error: function (xhr, status, p3) {
-                        alert(xhr.responseText);
-                    }
-                });
+        $('#result').on('click', '.page', function (event) {
+            var Id = $(this).attr('data-ajax');
+            
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Index", "Home")',
+                data: "page=" + Id,
+                success: function (result) {
+                    $('#result').empty();
+                    $('#result').html(result);
+                },
+                error: function (xhr, status, p3) {
+                    alert(xhr.responseText);
+                }
 
             });
 
-            $('.cross').on('click', function (e) {
-                var el = $('.add');
-                $('#uploadFile').before("<input type='url' name='Link' value='link'placeholder = 'link'>");
-            });
-
+            return false;
 
         })
+
+
+        $('#mesFormSubmit').on('click', function (e) {
+
+            var postbody = $("#mesForm").serializeArray();
+            var files = document.getElementById('uploadFile').files;
+            if (window.FormData !== undefined) {
+                var data = new FormData();
+                for (var i = 0; i < postbody.length; i++) {
+                    data.append(postbody[i].name, postbody[i].value);
+                }
+                if (files.length > 0) {
+                    for (var x = 0; x < files.length; x++) {
+                        data.append("file" + x, files[x]);
+                    }
+                }
+            };
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("SaveMessage", "Home")',
+                contentType: false,
+                processData: false,
+                data: data,
+                success: function (result) {
+
+                },
+                error: function (xhr, status, p3) {
+                    alert(xhr.responseText);
+                }
+            });
+
+        });
+
+        $('.cross').on('click', function (e) {
+            var el = $('.add');
+            $('#uploadFile').before("<input type='url' name='Link' value='link'placeholder = 'link'>");
+        });
+
+
+    })
 
     </script>
 }

@@ -14,12 +14,11 @@ namespace test.Controllers
 {
     public class HomeController : Controller
     {
-        protected int PageSize = 10;
+        protected int PageSize = 5;
         // GET: Home
-        public ActionResult Index(int page = 1)
+        public ActionResult Index(int page = 0)
         {
-
-
+            
             IEnumerable<Message> msgs = Repository.GetMessages(page, PageSize);
             IEnumerable<User> users = Repository.GetUsers();
             IEnumerable<Attachment> attachments = Repository.GetAttachments();
@@ -34,11 +33,16 @@ namespace test.Controllers
                 var cookieVal = cookie.Value;
                 ViewBag.userId = Convert.ToInt32(cookieVal);
            }
-            
+           
 
             if (Request.IsAjaxRequest())
             {
-                return PartialView("MessageDetails", model);
+                var viewModel = new MessagesViewModel
+                {
+                    Messages = model,
+                    Paging = new PagingModel(page, PageSize, totalMessagesCount)
+                };
+                return PartialView("MessageDetails", viewModel);
             }
             else
             {
