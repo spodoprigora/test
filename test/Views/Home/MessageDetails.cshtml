@@ -1,36 +1,39 @@
 ﻿@model List<test.ViewModel.MessageWithAttachemtns>
 
-<div class="container" id="result">
-    @foreach (var messageModel in @Model)
-    {
-        <div class="message">
-            @*<div>ИД @messageModel.Message.Id</div>
-                <div>ИД пользователя @messageModel.Message.IdUser</div>*@
-            <h3 class="text-warning">@messageModel.Message.Name</h3>
-            <div>@messageModel.Message.Text</div>
-            @{
-        int count = @messageModel.Message.LikeCount;
-            }
-            <a href="/" class="like" data-ajax="@messageModel.Message.Id">@messageModel.Message.LikeCount</a>
-            <p>Вложения:</p>
-            <ul>
-                @foreach (var attach in @messageModel.Attachment)
-                {
-                    <li>
-                        @attach.Attachment
-                    </li>
-                }
-            </ul>
-            @if (ViewBag.userId != null && ViewBag.userId == @messageModel.Message.IdUser)
-            {
-                <a href="/" class="del" data-ajax="@messageModel.Message.Id">Удалить</a>
 
-                @*@Ajax.ActionLink("Удалить", "DellMessage", "Home",
-                             new { Id = @messageModel.Message.Id },
-                             null
-                             )*@
+@foreach (var messageModel in @Model)
+    {
+    <div class="message">
+        @*<div>ИД @messageModel.Message.Id</div>
+            <div>ИД пользователя @messageModel.Message.IdUser</div>*@
+        <h3 class="text-warning">@messageModel.Message.Name</h3>
+        <div>@messageModel.Message.Text</div>
+        @{
+            int count = @messageModel.Message.LikeCount;
+        }
+
+        @Ajax.ActionLink(@count.ToString(), "LikeInc", "Home", new { messadgeId = @messageModel.Message.Id },
+            new AjaxOptions { OnSuccess = "updateMessages", HttpMethod = "POST" },
+            new { @class = "like" }
+        )
+              
+        <p>Вложения:</p>
+        <ul>
+            @foreach (var attach in @messageModel.Attachment)
+            {
+                <li>
+                    <a href="@attach.Attachment">@attach.Attachment</a>
+                </li>
             }
-        </div>
+        </ul>
+        @if (ViewBag.userId != null && ViewBag.userId == @messageModel.Message.IdUser)
+            {
+               @Ajax.ActionLink("Удалить", "DellMessage", "Home",
+                   new { messadgeId = @messageModel.Message.Id },
+                   new AjaxOptions { OnSuccess = "updateMessages", HttpMethod ="POST"}
+               )
+            }
+    </div>
     }
 
-</div>
+

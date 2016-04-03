@@ -48,6 +48,9 @@ namespace test.Controllers
         [HttpPost]
        public ActionResult SaveMessage(string Name, string Message, string Link)
         {
+
+            
+
             List<string> attachList = new List<string>();
             attachList.Add(Link);
             foreach (string file in Request.Files)

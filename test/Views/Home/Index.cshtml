@@ -6,13 +6,16 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-
-      @{ Html.RenderPartial("MessageDetails", @Model.Messages);}
-
+<div class="container" id="result">
+    @{ Html.RenderPartial("MessageDetails", @Model.Messages); }
+</div>
 
 @section Form{
-   
-    @using (Ajax.BeginForm("SaveMessage", "Home", new AjaxOptions { UpdateTargetId = "result"}, new { @class = "form", enctype = "multipart/form-data" }))
+  
+    @using (Ajax.BeginForm("SaveMessage", "Home",
+        new {},
+        new AjaxOptions { OnSuccess = "updateMessages"}, 
+        new { @class = "form", enctype = "multipart/form-data" }))
     {
         <div>
             @Html.Label("Name", "Имя")
@@ -28,7 +31,7 @@
                 @Html.Label("Link", "Введите ссылку")
                 @Html.TextBox("Link", "", new { placeholder = "link" })
 
-                <input type="file" id="" value="" name="file[]" accept="image/jpeg,image/png,image/gif" multiple="true" />
+                <input type="file" name="fileInput" accept="image/jpeg,image/png,image/gif" multiple="true" />
             </fieldset>
        </div>
        <p><input type="submit" value="Отправить" class="btn btn-success"/></p>
@@ -39,51 +42,32 @@
 
 @section scripts{
     <script type="text/javascript">
-    $('.like').on('click', function (event) {
-        var Id = $(this).attr('data-ajax');
-
-        $.ajax({
-            type: "POST",
-            url: '@Url.Action("LikeInc", "Home")',
-            data: "messadgeId=" + Id,
-            success: function (result) {
-
-            },
-            error: function (xhr, status, p3) {
-                alert(xhr.responseText);
-            }
-        });
-        return false;
-    });
-
-        $('.del').on('click', function (event) {
-            var Id = $(this).attr('data-ajax');
-
-            $.ajax({
-                type: "POST",
-                url: '@Url.Action("DellMessage", "Home")',
-                data: "messadgeId=" + Id,
-                success: function (result) {
-
-                },
-                error: function (xhr, status, p3) {
-                    alert(xhr.responseText);
-                }
-            });
-            return false;
-        });
-
+   
 
     setInterval(function () {
         $.ajax({
             type: "POST",
             url: '@Url.Action("Index", "Home")',
             data: "",
-            success: function (rsult) {
-               
+            success: function (result) {
+                $('#result').empty();
+                $('#result').html(result);
             }
         });
-    }, 10000);
+    }, 5000);
+
+
+        var updateMessages = function () {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Index", "Home")',
+                data: "",
+                success: function (result) {
+                    $('#result').empty();
+                    $('#result').html(result);
+                }
+            });
+        };
 
 
 
