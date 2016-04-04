@@ -74,7 +74,7 @@ namespace test.Controllers
                     var nameArr = fileName.Split('.');
                     string AbsolurFile = nameArr[0] + "~" + Guid.NewGuid() + "." + nameArr[1];
                     string path = Server.MapPath("~/UploadFiles/" + AbsolurFile);
-                    // сохраняем файл в папку Files в проекте
+                    // сохраняем файл в папку UploadFiles в проекте
                     upload.SaveAs(path);
 
 
