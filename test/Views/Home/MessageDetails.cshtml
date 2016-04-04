@@ -1,22 +1,20 @@
-﻿@model List<test.ViewModel.MessageWithAttachemtns>
+﻿@model test.ViewModel.MessagesViewModel
+@*@model List<test.ViewModel.MessageWithAttachemtns>*@
 
-
-@foreach (var messageModel in @Model)
-    {
+@foreach (var messageModel in @Model.Messages)
+{
     <div class="message">
-        @*<div>ИД @messageModel.Message.Id</div>*@
-            <div>ИД пользователя @messageModel.Message.IdUser</div>
+        <span class="date">@messageModel.Message.Date</span>
         <h3 class="text-warning">@messageModel.Message.Name</h3>
         <div>@messageModel.Message.Text</div>
         @{
-            int count = @messageModel.Message.LikeCount;
+    int count = @messageModel.Message.LikeCount;
         }
-
         @Ajax.ActionLink(@count.ToString(), "LikeInc", "Home", new { messadgeId = @messageModel.Message.Id },
             new AjaxOptions { OnSuccess = "updateMessages", HttpMethod = "POST" },
             new { @class = "like" }
         )
-              
+
         <p>Вложения:</p>
         <ul>
             @foreach (var attach in @messageModel.Attachment)
@@ -27,14 +25,134 @@
             }
         </ul>
         @if (ViewBag.userId != null && ViewBag.userId == @messageModel.Message.IdUser)
-            {
-               @Ajax.ActionLink("Удалить", "DellMessage", "Home",
+        {
+            @Ajax.ActionLink("Удалить", "DellMessage", "Home",
                    new { messadgeId = @messageModel.Message.Id },
-                   new AjaxOptions { OnSuccess = "updateMessages", HttpMethod ="POST"},
+                   new AjaxOptions { OnSuccess = "updateMessages", HttpMethod = "POST" },
                          new { @class = "dell" }
                )
-            }
+        }
     </div>
-    }
+}
+<div class="page-header">
+    @*пейджинг---------------------------------------------------------------------*@
+    <div class="pages">
+        <ul>
+            @if (Model.Paging.CurrentPage == 0) //первый
+            {
+                if (@Model.Paging.TotalPages == 1)
+                {
+                    <li class="curent"><a class="page" href="@Url.Action("Index", "Home")" data-ajax=0>1</a></li>
+                }
+                else if (@Model.Paging.TotalPages == 2)
+                {
+                    <li class="curent"><a class="page" href="@Url.Action("Index", "Home")" data-ajax=0>1</a></li>
+                    <li><a class="page" href="@Url.Action("Index", "Home")" data-ajax=1>2</a></li>
+                }
+                else if (@Model.Paging.TotalPages == 3)
+                {
+                    <li class="curent"><a class="page" href="@Url.Action("Index", "Home")" data-ajax=0>1</a></li>
+                    <li><a class="page" href="@Url.Action("Index", "Home")" data-ajax=1>2</a></li>
 
+                    int value = Model.Paging.TotalPages - 1;
+                    <li><a class="page" href="@Url.Action("Index", "Home")" data-ajax=@value>@Model.Paging.TotalPages</a></li>
+                }
+                else if (@Model.Paging.TotalPages > 3)
+                {
+                    <li class="curent"><a class="page" href="@Url.Action("Index", "Home")" data-ajax=0>1</a></li>
+                    <li><a class="page" href="@Url.Action("Index", "Home")" data-ajax=1>2</a></li>
+                    <li class="point">. . .</li>
 
+                    int value = Model.Paging.TotalPages - 1;
+                    <li><a class="page" href="@Url.Action("Index", "Home")" data-ajax=@value>@Model.Paging.TotalPages</a></li>
+                }
+            }
+            @if (Model.Paging.CurrentPage == 1) //второй
+            {
+                if (@Model.Paging.TotalPages == 2)
+                {
+                    <li><a class="page" href="@Url.Action("Index", "Home")" data-ajax=0>1</a></li>
+                    <li class="curent"><a class="page" href="@Url.Action("Index", "Home")" data-ajax=1>2</a></li>
+                }
+                else if (@Model.Paging.TotalPages == 3)
+                {
+                    <li><a class="page" href="@Url.Action("Index", "Home")" data-ajax=0>1</a></li>
+                    <li class="curent"><a class="page" href="@Url.Action("Index", "Home")" data-ajax=1>2</a></li>
+
+                    int value = Model.Paging.TotalPages - 1;
+                    <li><a class="page" href="@Url.Action("Index", "Home")" data-ajax=@value>@Model.Paging.TotalPages</a></li>
+                }
+                else if (@Model.Paging.TotalPages == 4)
+                {
+                    <li><a class="page" href="@Url.Action("Index", "Home")" data-ajax=0>1</a></li>
+                    <li class="curent"><a class="page" href="@Url.Action("Index", "Home")" data-ajax=1>2</a></li>
+                    <li><a class="page" href="@Url.Action("Index", "Home")" data-ajax=2>3</a></li>
+                    <li><a class="page" href="@Url.Action("Index", "Home")" data-ajax=3>4</a></li>
+                }
+                else if (@Model.Paging.TotalPages > 4)
+                {
+                    <li><a class="page" href="@Url.Action("Index", "Home")" data-ajax=0>1</a></li>
+                    <li class="curent"><a class="page" href="@Url.Action("Index", "Home")" data-ajax=1>2</a></li>
+                    <li><a class="page" href="@Url.Action("Index", "Home")" data-ajax=2>3</a></li>
+                    <li class="point">. . .</li>
+                    int value = Model.Paging.TotalPages - 1;
+                    <li><a class="page" href="@Url.Action("Index", "Home")" data-ajax=@value %>@Model.Paging.TotalPages</a></li>
+                }
+            }
+            @if (Model.Paging.CurrentPage >= 2 && Model.Paging.CurrentPage <= @Model.Paging.TotalPages - 3) //серидина
+            {
+                <li><a class="page" href="@Url.Action("Index", "Home")" data-ajax=0>1</a></li>
+                if (Model.Paging.CurrentPage > 2)
+                {
+                    <li class="point">. . .</li>
+                }
+                int value = Model.Paging.CurrentPage - 1;
+                <li><a class="page" href="@Url.Action("Index", "Home")" data-ajax=@value>@Model.Paging.CurrentPage</a></li>
+                int cur = (int)@Model.Paging.CurrentPage + 1;
+                value = Model.Paging.CurrentPage;
+                <li class="curent"><a class="page" href="@Url.Action("Index", "Home")" data-ajax=@value>@cur</a></li>
+                int next = (int)@Model.Paging.CurrentPage + 2;
+                value = Model.Paging.CurrentPage + 1;
+                <li><a class="page" href="@Url.Action("Index", "Home")" data-ajax=@value>@next</a></li>
+                if (@Model.Paging.CurrentPage < (@Model.Paging.TotalPages - 3))
+                {
+                    <li class="point">. . .</li>
+                }
+                value = Model.Paging.TotalPages - 1;
+                <li><a class="page" href="@Url.Action("Index", "Home")" data-ajax=@value>@Model.Paging.TotalPages</a></li>
+            }
+            @if (@Model.Paging.CurrentPage == @Model.Paging.TotalPages - 2 && @Model.Paging.TotalPages > 3) //предпоследний
+            {
+                <li><a class="page" href="@Url.Action("Index", "Home")" data-ajax=0>1</a></li>
+                <li class="point">. . .</li>
+                int last = (int)Model.Paging.TotalPages - 2;
+                int value = Model.Paging.TotalPages - 3;
+                if (last != 2)
+                {
+                    <li><a class="page" href="@Url.Action("Index", "Home")" data-ajax=@value>@last</a></li>
+                }
+
+                int cur = (int)Model.Paging.TotalPages - 1;
+                value = Model.Paging.TotalPages - 2;
+                <li class="curent"><a class="page" href="@Url.Action("Index", "Home")" data-ajax=@value>@cur</a></li>
+                value = Model.Paging.TotalPages - 1;
+                <li><a class="page" href="@Url.Action("Index", "Home")" data-ajax=@value>@Model.Paging.TotalPages</a></li>
+            }
+            @if (@Model.Paging.CurrentPage == @Model.Paging.TotalPages - 1 && @Model.Paging.TotalPages != 1 && @Model.Paging.TotalPages != 2) //последний
+            {
+                <li><a class="page" href="@Url.Action("Index", "Home")" data-ajax=0>1</a></li>
+                if (@Model.Paging.TotalPages > 3)
+                {
+                    <li class="point">. . .</li>
+                }
+
+                int last = (int)Model.Paging.TotalPages - 1;
+                int value = Model.Paging.TotalPages - 2;
+                <li><a class="page" href="@Url.Action("Index", "Home")" data-ajax=@value>@last</a></li>
+                value = Model.Paging.TotalPages - 1;
+                <li class="curent"><a class="page" href="@Url.Action("Index", "Home")" data-ajax=@value>@Model.Paging.TotalPages</a></li>
+            }
+        </ul>
+    </div>
+    @*пейджинг---------------------------------------------------------------------*@
+</div>

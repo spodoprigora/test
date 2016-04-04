@@ -14,11 +14,10 @@ namespace test.Controllers
 {
     public class HomeController : Controller
     {
-        protected int PageSize = 4;
+        protected int PageSize = 5;
         // GET: Home
-        public ActionResult Index(int page = 1)
+        public ActionResult Index(int page = 0)
         {
-
 
             IEnumerable<Message> msgs = Repository.GetMessages(page, PageSize);
             IEnumerable<User> users = Repository.GetUsers();
@@ -33,12 +32,17 @@ namespace test.Controllers
             {
                 var cookieVal = cookie.Value;
                 ViewBag.userId = Convert.ToInt32(cookieVal);
-           }
-            
+            }
+
 
             if (Request.IsAjaxRequest())
             {
-                return PartialView("MessageDetails", model);
+                var viewModel = new MessagesViewModel
+                {
+                    Messages = model,
+                    Paging = new PagingModel(page, PageSize, totalMessagesCount)
+                };
+                return PartialView("MessageDetails", viewModel);
             }
             else
             {
@@ -52,40 +56,42 @@ namespace test.Controllers
         }
 
         [HttpPost]
-       public ActionResult SaveMessage(string Name, string Message, IEnumerable<string> Link)
+        public ActionResult SaveMessage(string Name, string Message, IEnumerable<string> Link)
         {
             List<string> attachList = new List<string>();
-            foreach(var att in Link){
+            foreach (var att in Link)
+            {
                 attachList.Add(att);
             }
-            
+
             foreach (string file in Request.Files)
             {
-               var upload = Request.Files[file];
-               if (upload != null && upload.FileName!="")
-               {
-                 // получаем имя файла
-                 string fileName = System.IO.Path.GetFileName(upload.FileName);
-                 var nameArr = fileName.Split('.');
-                string AbsolurFile = nameArr[0] + "~" + Guid.NewGuid() + "." + nameArr[1];
-                 string path = Server.MapPath("~/UploadFiles/" + AbsolurFile);
-                 // сохраняем файл в папку Files в проекте
-                 upload.SaveAs(path);
+                var upload = Request.Files[file];
+                if (upload != null && upload.FileName != "")
+                {
+                    // получаем имя файла
+                    string fileName = System.IO.Path.GetFileName(upload.FileName);
+                    var nameArr = fileName.Split('.');
+                    string AbsolurFile = nameArr[0] + "~" + Guid.NewGuid() + "." + nameArr[1];
+                    string path = Server.MapPath("~/UploadFiles/" + AbsolurFile);
+                    // сохраняем файл в папку Files в проекте
+                    upload.SaveAs(path);
 
 
 
-                   string ServerPath = Resolve.ResolveServerUrl(VirtualPathUtility.ToAbsolute("~/UploadFiles/"+AbsolurFile),false);
-                   attachList.Add(ServerPath);
-               }
-             }
+                    string ServerPath = Resolve.ResolveServerUrl(VirtualPathUtility.ToAbsolute("~/UploadFiles/" + AbsolurFile), false);
+                    attachList.Add(ServerPath);
+                }
+            }
 
 
 
 
 
-            
+
             var cookie = Request.Cookies["name"];
-            if(cookie != null){
+            if (cookie != null)
+            {
                 var cookieVal = Convert.ToInt32(cookie.Value);
                 int userId = Repository.SaveMessage(Name, Message, attachList, cookieVal);
             }
@@ -100,27 +106,27 @@ namespace test.Controllers
             }
 
 
-        
 
 
 
-           
+
+
             return new HttpStatusCodeResult(200);
-         }
-
-    [HttpPost]
-        public ActionResult DellMessage(int messadgeId)
-        {
-            bool res = Repository.Dell(messadgeId);
-        if(res)
-            return new HttpStatusCodeResult(200);
-        else
-            return new HttpStatusCodeResult(400);
-   
         }
 
         [HttpPost]
-    public ActionResult LikeInc(int messadgeId)
+        public ActionResult DellMessage(int messadgeId)
+        {
+            bool res = Repository.Dell(messadgeId);
+            if (res)
+                return new HttpStatusCodeResult(200);
+            else
+                return new HttpStatusCodeResult(400);
+
+        }
+
+        [HttpPost]
+        public ActionResult LikeInc(int messadgeId)
         {
 
             bool res = Repository.IncLike(messadgeId);
@@ -129,7 +135,7 @@ namespace test.Controllers
             else
                 return new HttpStatusCodeResult(400);
         }
-       
+
 
     }
 }

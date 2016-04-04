@@ -60,25 +60,28 @@ namespace test.Repositories
                 using (var connection = new SqlConnection(ConnectionString))
                 {
                      connection.Open();
-                     SqlCommand command = new SqlCommand(" SELECT Id, IdUser, Text, MessageDate, LikeCount from Messages ORDER BY Id DESC OFFSET @page_size*(@offset - 1) ROW FETCH NEXT @page_size  ROWS ONLY", connection);
 
-                     SqlParameter page_size = new SqlParameter("page_size", SqlDbType.Int);
-                     page_size.Value = pageSize;
-                     command.Parameters.Add(page_size);
-                     SqlParameter offset = new SqlParameter("offset", SqlDbType.Int);
-                     offset.Value = page;
-                     command.Parameters.Add(offset);
-                    
+                     SqlCommand command = new SqlCommand(" SELECT Id, IdUser, Text, MessageDate, LikeCount from Messages ORDER BY Id DESC OFFSET(@PageSize * @Page) ROWS FETCH NEXT @PageSize ROWS ONLY", connection);
+                     SqlParameter PageSize = new SqlParameter("PageSize", SqlDbType.Int);
+                     PageSize.Value = pageSize;
+                     command.Parameters.Add(PageSize);
+                     SqlParameter Page = new SqlParameter("Page", SqlDbType.Int);
+                     Page.Value = page;
+                     command.Parameters.Add(Page);
+ 
                     SqlDataReader reader = command.ExecuteReader();
 
                     while (reader.Read())
                     {
+                        var tempData = reader[3].ToString();
+                        var dataArr = tempData.Split(' ');
                         var message = new Message
                         {
                             Id = (int)reader[0],
                             IdUser = (int)reader[1],
                             Text = (string)reader[2],
-                            MessageDate = reader[3].ToString(),
+
+                            MessageDate = dataArr[0],
                             LikeCount = (int)reader[4]
                         };
                        messages.Add(message);
