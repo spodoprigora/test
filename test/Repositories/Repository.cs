@@ -10,8 +10,6 @@ using test.Models;
 using System.Data;
 
 
-
-
 namespace test.Repositories
 {
     public static class Repository

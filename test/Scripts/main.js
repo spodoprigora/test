@@ -14,19 +14,20 @@
         });
     }, 1000);
 
-    var updateMessages = function () {
-        $.ajax({
-            type: "POST",
-            url: "Home/Index",
-            data: "",
-            success: function (result) {
-                $('#result').empty();
-                $('#result').html(result);
-            }
-        });
-    };
 
+    //var updateMessages = function () {
+    //    $.ajax({
+    //        type: "POST",
+    //        url: "Home/Index",
+    //        data: "",
+    //        success: function (result) {
+    //            $('#result').empty();
+    //            $('#result').html(result);
+    //        }
+    //    });
+    //};
 
+    // пейджинг
     $('#result').on('click', '.page', function (event) {
         pageNumber = $(this).attr('data-ajax');
 
@@ -45,6 +46,7 @@
         return false;
     })
 
+    // AJAX сохранение формы
     $('#mesFormSubmit').on('click', function (e) {
         var postbody = $("#mesForm").serializeArray();
         var files = document.getElementById('uploadFile').files;
@@ -73,6 +75,7 @@
         $('#mesForm')[0].reset();
     });
 
+    //добавление инпута
     $('.cross').on('click', function (e) {
         var el = $('.add');
         $('#uploadFile').before("<input type='url' name='Link' value='link'placeholder = 'link'>");

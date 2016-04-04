@@ -1,17 +1,12 @@
-﻿
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>БЛОГ</title>
-
     @Styles.Render("~/Content/css")
     @Styles.Render("~/Content/bootstrap")
     @Scripts.Render("~/bundles/modernizr")
-    @*<link href="~/Content/Site.css" rel="stylesheet" type="text/css" />
-    <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
-    <script src="~/Scripts/modernizr-2.6.2.js"></script>*@
 </head>
 <body>
     <div class="navbar navbar-inverse navbar-fixed-top">
@@ -26,19 +21,14 @@
     <div class="container body-content">
         @RenderBody()
         @RenderSection("Form", false)
-
         <hr />
-        
-    </div>
+   </div>
     <footer>
         <p>&copy; @DateTime.Now.Year - My ASP.NET MVC Test Application</p>
     </footer>
-
-
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/main")
-
 </body>
 </html>

@@ -76,9 +76,6 @@ namespace test.Controllers
                     string path = Server.MapPath("~/UploadFiles/" + AbsolurFile);
                     // сохраняем файл в папку UploadFiles в проекте
                     upload.SaveAs(path);
-
-
-
                     string ServerPath = Resolve.ResolveServerUrl(VirtualPathUtility.ToAbsolute("~/UploadFiles/" + AbsolurFile), false);
                     attachList.Add(ServerPath);
                 }

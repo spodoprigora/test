@@ -24,7 +24,7 @@ namespace test
                         "~/Content/site.css"));
 
          bundles.Add(new StyleBundle("~/Content/bootstrap").Include(
-                        "~/Content/bootstrap.min.css"));
+                        "~/Content/bootstrap/bootstrap.min.css"));
         }
     }
 }
