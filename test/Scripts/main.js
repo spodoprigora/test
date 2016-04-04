@@ -14,18 +14,18 @@
         });
     }, 1000);
 
-
-    //var updateMessages = function () {
-    //    $.ajax({
-    //        type: "POST",
-    //        url: "Home/Index",
-    //        data: "",
-    //        success: function (result) {
-    //            $('#result').empty();
-    //            $('#result').html(result);
-    //        }
-    //    });
-    //};
+    //обновление после like, dell
+    var updateMessages = function () {
+        $.ajax({
+            type: "POST",
+            url: "Home/Index",
+            data: "",
+            success: function (result) {
+                $('#result').empty();
+                $('#result').html(result);
+            }
+        });
+    };
 
     // пейджинг
     $('#result').on('click', '.page', function (event) {

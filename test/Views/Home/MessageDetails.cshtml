@@ -7,14 +7,14 @@
         <span class="date">@messageModel.Message.Date</span>
         <h3 class="text-warning">@messageModel.Message.Name</h3>
         <div>@messageModel.Message.Text</div>
-        @{
-    int count = @messageModel.Message.LikeCount;
-        }
-        @Ajax.ActionLink(@count.ToString(), "LikeInc", "Home", new { messadgeId = @messageModel.Message.Id },
-            new AjaxOptions { OnSuccess = "updateMessages", HttpMethod = "POST" },
-            new { @class = "like" }
-        )
-
+            @{
+                int count = @messageModel.Message.LikeCount;
+            }
+            @Ajax.ActionLink(@count.ToString(), "LikeInc", "Home", new { messadgeId = @messageModel.Message.Id },
+                new AjaxOptions { OnSuccess = "updateMessages", HttpMethod = "POST" },
+                new { @class = "like" }
+            )
+        
         <p>Вложения:</p>
         <ul>
             @foreach (var attach in @messageModel.Attachment)
