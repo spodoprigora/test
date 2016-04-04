@@ -7,8 +7,6 @@ namespace test.Models
 {
     public class AttachmentModel
     {
-      
-     
         public string Attachment { get; set; }
 
         public AttachmentModel(string link)

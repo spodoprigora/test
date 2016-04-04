@@ -7,6 +7,13 @@ namespace test.Models
 {
     public class MessageModel
     {
+        public int Id { get; set; }
+        public int IdUser { get; set; }
+        public string Name { get; set; }
+        public string Text { get; set; }
+        public string Date { get; set; }
+        public int LikeCount { get; set; }
+
         public MessageModel(int Id, int IdUser, string Name, string Text, string Date, int LikeCount)
         {
             this.Id = Id;
@@ -16,13 +23,6 @@ namespace test.Models
             this.Date = Date;
             this.LikeCount = LikeCount;
         }
-        
-        public int Id { get; set; }
-        public int IdUser { get; set; }
-        public string Name { get; set; }
-        public string Text { get; set; }
-        public string Date { get; set; }
-        public int LikeCount { get; set; }
 
     }
 }
