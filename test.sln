@@ -5,6 +5,8 @@ VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test", "test\test.csproj", "{C0FA13A7-C4EE-4215-B4DA-358908FFDEC9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test.DbEntites", "test.DbEntites\test.DbEntites.csproj", "{E38DE814-45BC-4241-A27A-E77415323DD7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{C0FA13A7-C4EE-4215-B4DA-358908FFDEC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C0FA13A7-C4EE-4215-B4DA-358908FFDEC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C0FA13A7-C4EE-4215-B4DA-358908FFDEC9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E38DE814-45BC-4241-A27A-E77415323DD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E38DE814-45BC-4241-A27A-E77415323DD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E38DE814-45BC-4241-A27A-E77415323DD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E38DE814-45BC-4241-A27A-E77415323DD7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

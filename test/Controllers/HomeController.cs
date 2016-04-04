@@ -10,6 +10,7 @@ using test.Models;
 using System.IO;
 using test.ResolveServerUrl;
 
+
 namespace test.Controllers
 {
     public class HomeController : Controller
@@ -18,12 +19,10 @@ namespace test.Controllers
         // GET: Home
         public ActionResult Index(int page = 0)
         {
-
             IEnumerable<Message> msgs = Repository.GetMessages(page, PageSize);
             IEnumerable<User> users = Repository.GetUsers();
             IEnumerable<Attachment> attachments = Repository.GetAttachments();
             var totalMessagesCount = Repository.GetTotalItemsCount();
-
             List<MessageWithAttachemtns> model = Repository.GetViewModel(msgs, users, attachments);
 
             // получаем куки
@@ -34,26 +33,16 @@ namespace test.Controllers
                 ViewBag.userId = Convert.ToInt32(cookieVal);
             }
 
-
-            if (Request.IsAjaxRequest())
+            var viewModel = new MessagesViewModel
             {
-                var viewModel = new MessagesViewModel
-                {
-                    Messages = model,
-                    Paging = new PagingModel(page, PageSize, totalMessagesCount)
-                };
+                Messages = model,
+                Paging = new PagingModel(page, PageSize, totalMessagesCount)
+            };
+           if (Request.IsAjaxRequest())
                 return PartialView("MessageDetails", viewModel);
-            }
-            else
-            {
-                var viewModel = new MessagesViewModel
-                {
-                    Messages = model,
-                    Paging = new PagingModel(page, PageSize, totalMessagesCount)
-                };
-                return View(viewModel);
-            }
-        }
+           else
+               return View(viewModel);
+       }
 
         [HttpPost]
         public ActionResult SaveMessage(string Name, string Message, IEnumerable<string> Link)
