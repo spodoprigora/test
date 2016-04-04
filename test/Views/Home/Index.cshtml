@@ -11,19 +11,14 @@
 
 
 <div class="page-header">
-    @*@Html.PaginationBlock(Model.Paging, Request.QueryString, Ajax, new AjaxOptions(),
-    PagingHelper.PageLinkOption.Prevoius.ToString(),
-    PagingHelper.PageLinkOption.Next.ToString())*@
+   
 
 
-    @Html.PaginationBlock(Model.Paging, Request.QueryString, Ajax, new AjaxOptions()
+    @Html.PaginationBlock(Model.Paging, Request.QueryString, Ajax, new AjaxOptions
     {
-
         HttpMethod = "GET",
-        InsertionMode = InsertionMode.ReplaceWith,
-
-        UpdateTargetId = "result",
-
+        InsertionMode = InsertionMode.Replace,
+        UpdateTargetId = "result"
     }, PagingHelper.PageLinkOption.Prevoius.ToString(), PagingHelper.PageLinkOption.Next.ToString())
 </div>
 
@@ -75,7 +70,7 @@
     <script type="text/javascript">
         $(document).ready(function () {
 
-            setInterval(function () {
+            @*setInterval(function () {
                 $.ajax({
                     type: "POST",
                     url: '@Url.Action("Index", "Home")',
@@ -85,7 +80,7 @@
                         $('#result').html(result);
                     }
                 });
-            }, 1000);
+            }, 1000);*@
 
             var updateMessages = function () {
                 $.ajax({

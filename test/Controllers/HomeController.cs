@@ -14,7 +14,7 @@ namespace test.Controllers
 {
     public class HomeController : Controller
     {
-        protected int PageSize = 10;
+        protected int PageSize = 4;
         // GET: Home
         public ActionResult Index(int page = 1)
         {
